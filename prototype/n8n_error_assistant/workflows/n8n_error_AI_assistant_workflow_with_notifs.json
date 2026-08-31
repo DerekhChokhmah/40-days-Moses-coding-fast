@@ -1,0 +1,153 @@
+{
+  "name": "n8n_error_AI_assistant_workflow_with_notifs",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "8ebb8afe-31b4-4d41-be48-c6d143827534",
+      "name": "Error Trigger"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://monday-vision-unsent.ngrok-free.dev/analyze-error",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "node",
+              "value": "={{$json.execution.error.node.name}}"
+            },
+            {
+              "name": "node_type",
+              "value": "={{$json.execution.error.node.type}}"
+            },
+            {
+              "name": "error",
+              "value": "={{$json.execution.error.message}}"
+            },
+            {
+              "name": "status_code",
+              "value": "={{$json.execution.error.httpCode}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        224,
+        0
+      ],
+      "id": "9162d435-8ac5-4a2e-b2ac-2315b6d2c7b9",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d54efdb4-f049-484b-ad8b-440cfc201adf",
+              "name": "error_report",
+              "value": "=Root Cause: {{$json.root_cause}} \nExplanation: {{$json.explanation}}  \nEvidence: {{$json.evidence}}  \nFix: {{$json.fix}}  \nNext Action: {{$json.next_action}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        448,
+        0
+      ],
+      "id": "88bc22bb-b071-4f73-85b7-465501ff7533",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0BTL3AP2CT",
+          "mode": "list",
+          "cachedResultName": "n8n-errors"
+        },
+        "text": "={{$json.error_report}}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.7,
+      "position": [
+        672,
+        0
+      ],
+      "id": "ab5a291b-98a8-46b9-ae72-5d864c802691",
+      "name": "Send a message",
+      "webhookId": "afa2aa04-aba8-47a1-ab22-4296f6ebbe6b",
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "cmnGJshxyBF5ni3k",
+          "name": "Slack account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "5c06d9d2-0dae-4828-9ec0-349a0cc7f79d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b0059665f4b40319443078178cd401a9db50546744132cac1dd368208325e66f"
+  },
+  "nodeGroups": [],
+  "id": "xk2TlglTPb5VUGzp",
+  "tags": []
+}

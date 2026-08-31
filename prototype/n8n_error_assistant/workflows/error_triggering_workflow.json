@@ -1,0 +1,69 @@
+{
+  "name": "error_triggering_workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 10
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "8e7fd66e-0dbd-418f-834f-99f1915b199e",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://httpbin.org/status/401",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        224,
+        0
+      ],
+      "id": "cf0faef1-0ae8-42e7-8531-12b5c9323e46",
+      "name": "HTTP Request"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "errorWorkflow": "xk2TlglTPb5VUGzp",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "6f69ee22-eac7-412c-8dab-c5240b671739",
+  "meta": {
+    "instanceId": "b0059665f4b40319443078178cd401a9db50546744132cac1dd368208325e66f"
+  },
+  "nodeGroups": [],
+  "id": "ePfWMds00TxNsJkW",
+  "tags": []
+}
