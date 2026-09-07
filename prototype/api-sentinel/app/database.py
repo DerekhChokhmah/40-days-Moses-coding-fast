@@ -1,5 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from models import Base
 import os 
 postgresql_db_password = os.environ["postgresql_db_password"]
                         #address of the db
@@ -9,6 +10,4 @@ Session = sessionmaker(engine)
 '''with Session() as session:
     session.add()
     session.commit() '''
-
-
-
+Base.metadata.create_all(engine)
