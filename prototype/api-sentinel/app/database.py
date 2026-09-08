@@ -10,4 +10,6 @@ Session = sessionmaker(engine)
 '''with Session() as session:
     session.add()
     session.commit() '''
+with Session() as session:
+    
 Base.metadata.create_all(engine)
