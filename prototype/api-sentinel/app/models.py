@@ -11,6 +11,9 @@ class Monitor(Base):
     name: Mapped[str] = mapped_column()
     url: Mapped[str] = mapped_column()
     active: Mapped[bool] = mapped_column(default=True)
+    method: Mapped[str] = mapped_column()
+    expected_status: Mapped[int] = mapped_column()
+    interval_value: Mapped[int] = mapped_column()
     monitor_results: Mapped[list["MonitoringResult"]] = relationship(back_populates="monitor") 
 
 class MonitoringResult(Base):
