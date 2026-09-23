@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, select
+from sqlalchemy import create_engine, select, exc, text
 from sqlalchemy.orm import sessionmaker
 from app.models import Base, Monitor, MonitoringResult
 import os 
