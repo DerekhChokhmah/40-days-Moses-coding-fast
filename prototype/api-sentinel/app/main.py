@@ -1,8 +1,9 @@
 from fastapi import FastAPI
 from app.schemas import schemaForMonitorAPI
-from app.database import Session
+from app.database import Session, exc, text
 #from sqlalchemy import select
-from app.models import Monitor 
+from app.models import Monitor
+
 app = FastAPI()
 
 
@@ -15,3 +16,19 @@ async def create_monitor_data(schema: schemaForMonitorAPI):
         session.add(monitor_2)
         session.commit()
         return "OK"
+
+@app.get("/health")
+async def check_health():
+   health = {}
+   health["FASTAPI status"] = "OK"
+   with Session() as session:
+          try:
+            session.execute(text("SELECT 1"))
+            health["PostgreSQL status"] = "OK"
+          except exc.DBAPIError:
+              health["PostgreSQL status"] = "UNHEALTHY"  
+       
+   return health 
+     
+   
+       
