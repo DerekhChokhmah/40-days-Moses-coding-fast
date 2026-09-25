@@ -1,6 +1,7 @@
 from sqlalchemy import create_engine, select, exc, text
 from sqlalchemy.orm import sessionmaker
-from app.models import Base, Monitor, MonitoringResult
+from models import Base, Monitor, MonitoringResult
+from http_monitor import httpEngine
 import os 
 postgresql_db_password = os.environ["postgresql_db_password"]
                         #address of the db
@@ -17,6 +18,8 @@ with Session() as session:
     session.add(monitor_1)
     session.commit()'''
     result = session.execute(statement=stmt)
-    for obj in result.scalars():
-        print(f"{obj.id}, {obj.url}, {obj.active}")
+    httpEngine(result)
+
+    '''for obj in result.scalars():
+        print(f"{obj.id}, {obj.url}, {obj.active}")'''
     
