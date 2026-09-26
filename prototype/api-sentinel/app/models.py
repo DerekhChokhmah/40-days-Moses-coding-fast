@@ -20,7 +20,7 @@ class MonitoringResult(Base):
     __tablename__ = "monitoring_results"
     id: Mapped[int] = mapped_column(primary_key=True)   
     monitor_id: Mapped[int] = mapped_column(ForeignKey("monitors.id")) 
-    status_code : Mapped[int] = mapped_column()
+    status_code : Mapped[int | None] = mapped_column()
     response_time: Mapped[float] = mapped_column()
     success: Mapped[bool] = mapped_column()
     checked_at: Mapped[datetime] = mapped_column(default=lambda: datetime.now(timezone.utc))
