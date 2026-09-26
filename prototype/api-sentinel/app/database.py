@@ -12,14 +12,17 @@ Session = sessionmaker(engine)
 '''with Session() as session:
     session.add()
     session.commit() '''
-stmt = select(Monitor).where(Monitor.id == 1)
+stmt = select(Monitor).where(Monitor.id == 5)
+stmt_res = select(MonitoringResult)
 with Session() as session:
     '''monitor_1 = Monitor(id=1, name="GITHUBAPI", url="https://api.github.com", active=True, method="GET", expected_status=200, interval_value= 20)
     session.add(monitor_1)
     session.commit()'''
     result = session.execute(statement=stmt)
-    httpEngine(result)
-
-    '''for obj in result.scalars():
-        print(f"{obj.id}, {obj.url}, {obj.active}")'''
+    monitoring_result = httpEngine(result)
+    session.add(monitoring_result)
+    session.commit()
+    result_monitoring = session.execute(statement=stmt_res)
+    for obj in result_monitoring.scalars():
+        print(f"{obj.monitor_id}, {obj.response_time}, {obj.checked_at}, {obj.status_code}, {obj.success}")
     
