@@ -1,2 +1,2 @@
-from database import hello
-print(hello.delay())
+from database import check_monitor
+print(check_monitor.delay(1))
