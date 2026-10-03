@@ -6,6 +6,7 @@ from http_monitor import httpEngine
 import os 
 import redis
 from celery import Celery
+import datetime
 postgresql_db_password = os.environ["postgresql_db_password"]
                         #address of the db                    
 
@@ -86,9 +87,43 @@ def find_active_monitors(session):
     stmt = select(Monitor).where(Monitor.active == True)
     result = session.execute(stmt)
     return result.scalars().all()
+
+def historical_data(monitor_id):
+    stmt = select(MonitoringResult).where((MonitoringResult.checked_at >= datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(hours=24)), MonitoringResult.monitor_id == monitor_id)
+    with Session() as session:
+        result = session.execute(stmt)
+        monitoring_results = result.scalars().all()
+        total_checks = len(monitoring_results)
+        successful = 0
+        failed = 0
+        response_time_total = 0
+        response_time_list = []
+        for res in monitoring_results:
+            response_time_total += res.response_time
+            response_time_list.append(res.response_time)   
+            if res.success == True:
+                successful += 1
+            else:
+                failed += 1    
+        if total_checks == 0:
+            uptime_percent = 0
+            failure_rate = 0
+            min_response_time = 0
+            max_response_time = 0
+            avg_response_time = 0
+
+        else:
+            uptime_percent = (successful/total_checks)*100  
+            failure_rate =  (failed/total_checks)*100
+            min_response_time = min(response_time_list)
+            max_response_time = max(response_time_list)
+            avg_response_time = response_time_total/len(response_time_list)          
+
+           
+
+        return monitor_id, uptime_percent, failure_rate, min_response_time, max_response_time, avg_response_time, total_checks, successful, failed
         
 
+print(historical_data(3))
 
-
-    
 
