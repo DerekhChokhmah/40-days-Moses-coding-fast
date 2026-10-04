@@ -88,42 +88,78 @@ def find_active_monitors(session):
     result = session.execute(stmt)
     return result.scalars().all()
 
-def historical_data(monitor_id):
-    stmt = select(MonitoringResult).where((MonitoringResult.checked_at >= datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(hours=24)), MonitoringResult.monitor_id == monitor_id)
+def historical_data():
+    stmt = select(MonitoringResult).where(
+        MonitoringResult.checked_at >=
+        datetime.datetime.now(datetime.timezone.utc) -
+        datetime.timedelta(hours=24)
+    )
+
     with Session() as session:
         result = session.execute(stmt)
         monitoring_results = result.scalars().all()
-        total_checks = len(monitoring_results)
-        successful = 0
-        failed = 0
-        response_time_total = 0
-        response_time_list = []
-        for res in monitoring_results:
-            response_time_total += res.response_time
-            response_time_list.append(res.response_time)   
-            if res.success == True:
-                successful += 1
+
+        dict_mon = {}
+
+        # MAP / GROUP
+        for mon in monitoring_results:
+            key = mon.monitor_id
+
+            if key in dict_mon:
+                dict_mon[key].append(mon)
             else:
-                failed += 1    
-        if total_checks == 0:
-            uptime_percent = 0
-            failure_rate = 0
-            min_response_time = 0
-            max_response_time = 0
-            avg_response_time = 0
+                dict_mon[key] = [mon]
 
-        else:
-            uptime_percent = (successful/total_checks)*100  
-            failure_rate =  (failed/total_checks)*100
-            min_response_time = min(response_time_list)
-            max_response_time = max(response_time_list)
-            avg_response_time = response_time_total/len(response_time_list)          
+        metrics = []
+        metrics_dict = {}
 
-           
+        # REDUCE
+        for mon_id, results in dict_mon.items():
 
-        return monitor_id, uptime_percent, failure_rate, min_response_time, max_response_time, avg_response_time, total_checks, successful, failed
-        
+            successful = 0
+            failed = 0
+            response_time_total = 0
+            response_time_list = []
 
-print(historical_data(3))
+            total_checks = len(results)
+
+            for res in results:
+                response_time_total += res.response_time
+                response_time_list.append(res.response_time)
+
+                if res.success == True:
+                    successful += 1
+                else:
+                    failed += 1
+
+            if total_checks == 0:
+                uptime_percent = 0
+                failure_rate = 0
+                min_response_time = 0
+                max_response_time = 0
+                avg_response_time = 0
+
+            else:
+                uptime_percent = (successful / total_checks) * 100
+                failure_rate = (failed / total_checks) * 100
+                min_response_time = min(response_time_list)
+                max_response_time = max(response_time_list)
+                avg_response_time = response_time_total / len(response_time_list)
+
+            metrics_dict[mon_id] = (
+                uptime_percent,
+                failure_rate,
+                min_response_time,
+                max_response_time,
+                avg_response_time,
+                total_checks,
+                successful,
+                failed
+            )
+
+        metrics.append(metrics_dict)
+
+        return metrics
 
 
+print(historical_data())
