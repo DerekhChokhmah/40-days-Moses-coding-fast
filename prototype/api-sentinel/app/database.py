@@ -1,3 +1,5 @@
+import statistics
+
 from sqlalchemy import create_engine, select, exc, text
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import sessionmaker
@@ -112,6 +114,9 @@ def historical_data():
 
         metrics = []
         metrics_dict = {}
+        deviate = []
+        z_score = []
+        z_score_cat = []
 
         # REDUCE
         for mon_id, results in dict_mon.items():
@@ -132,6 +137,8 @@ def historical_data():
                 else:
                     failed += 1
 
+            deviate.append(statistics.stdev(response_time_list))
+             
             if total_checks == 0:
                 uptime_percent = 0
                 failure_rate = 0
@@ -145,7 +152,7 @@ def historical_data():
                 min_response_time = min(response_time_list)
                 max_response_time = max(response_time_list)
                 avg_response_time = response_time_total / len(response_time_list)
-
+           
             metrics_dict[mon_id] = (
                 uptime_percent,
                 failure_rate,
@@ -156,10 +163,22 @@ def historical_data():
                 successful,
                 failed
             )
-
+        for i in range(len(response_time_list)):
+          for j in range(len(deviate)):
+            z = (response_time_list[i] - avg_response_time)/deviate[j]
+            z_score.append(abs(z))
+            if abs(z) < 2:
+                z_score_cat.append('Normal')
+            elif abs(z) >= 2 and abs(z) < 3:
+                z_score_cat.append('Unusual')
+            elif abs(z) <= 3:
+                z_score_cat.append('Abnormaly')
+            else:
+                z_score_cat.append('NA')           
+        
         metrics.append(metrics_dict)
 
-        return metrics
+        return z_score_cat
 
 
 print(historical_data())
