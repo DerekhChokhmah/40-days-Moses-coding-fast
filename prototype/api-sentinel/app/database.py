@@ -9,6 +9,8 @@ import os
 import redis
 from celery import Celery
 import datetime
+import numpy as np
+from sklearn.ensemble import IsolationForest
 postgresql_db_password = os.environ["postgresql_db_password"]
                         #address of the db                    
 
@@ -25,7 +27,12 @@ def check_monitor(monitor_id):
    with Session() as session:
      result_mon_with_id = find_monitor(monitor_id, session)
      final_result_with_id = monitoring_results(result_mon_with_id, session)
-     monitoring_result_output(final_result_with_id)
+     isolationForest = IsolationForest()    
+     isolationForest.fit(historical_data())
+     data = np.array([final_result_with_id.response_time, int(final_result_with_id.success), final_result_with_id.status_code]).reshape(1,-1)
+     y_pred = isolationForest.predict(data)
+     #monitoring_result_output(final_result_with_id)
+     return y_pred
      
 
 @app.on_after_configure.connect
@@ -117,6 +124,7 @@ def historical_data():
         deviate = []
         z_score = []
         z_score_cat = []
+        training_data = []
 
         # REDUCE
         for mon_id, results in dict_mon.items():
@@ -171,14 +179,20 @@ def historical_data():
                 z_score_cat.append('Normal')
             elif abs(z) >= 2 and abs(z) < 3:
                 z_score_cat.append('Unusual')
-            elif abs(z) <= 3:
+            elif abs(z) >= 3:
                 z_score_cat.append('Abnormaly')
             else:
                 z_score_cat.append('NA')           
         
         metrics.append(metrics_dict)
 
-        return z_score_cat
+        for mon in monitoring_results:
+            training_data.append([mon.response_time, int(mon.success), mon.status_code])
+
+        
+
+        return training_data
+    
 
 
 print(historical_data())
