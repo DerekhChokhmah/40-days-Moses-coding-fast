@@ -22,12 +22,12 @@ def httpEngine(result):
         diff = end_time - start_time
         monitor_result = MonitoringResult(monitor_id=result.id, status_code=None, success=False, response_time=diff)
         return monitor_result  
-      except httpx.ConnectError:
-        print("Connection Error")
-        end_time = time.perf_counter()
-        diff = end_time - start_time
-        monitor_result = MonitoringResult(monitor_id=result.id, status_code=None, success=False, response_time=diff)
-        return monitor_result
+      #except httpx.ConnectError:
+      #  print("Connection Error")
+      #  end_time = time.perf_counter()
+      #  diff = end_time - start_time
+      #  monitor_result = MonitoringResult(monitor_id=result.id, status_code=None, success=False, response_time=diff)
+      #  return monitor_result
       except:
         print("Error")  
         end_time = time.perf_counter()
