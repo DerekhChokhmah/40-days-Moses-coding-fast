@@ -3,7 +3,7 @@ import statistics
 from sqlalchemy import create_engine, select, exc, text
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import sessionmaker
-from models import Base, Monitor, MonitoringResult
+from models import Base, Monitor, MonitoringResult, Alert
 from http_monitor import httpEngine
 import os 
 import redis
@@ -27,13 +27,28 @@ def check_monitor(monitor_id):
    with Session() as session:
      result_mon_with_id = find_monitor(monitor_id, session)
      final_result_with_id = monitoring_results(result_mon_with_id, session)
+     create_alert(final_result_with_id,session)
      isolationForest = IsolationForest()    
      isolationForest.fit(historical_data())
      data = np.array([final_result_with_id.response_time, int(final_result_with_id.success), final_result_with_id.status_code]).reshape(1,-1)
      y_pred = isolationForest.predict(data)
      #monitoring_result_output(final_result_with_id)
      return y_pred
-     
+def create_alert(mon_result,session):
+    alert = "HTTP_FAILURE"
+    if mon_result.success == False:
+        if mon_result.status_code != None:
+          num = mon_result.status_code/100
+          if num == 5: 
+           session.add(Alert(monitor_id=mon_result.monitor_id, alert_type = alert,severity="CRITICAL",message="Check Immediately" ))  
+          elif num == 4:
+           session.add(Alert(monitor_id=mon_result.monitor_id, alert_type = alert,severity="WARNING",message="Warning notified")) 
+        else:
+          session.add(Alert(monitor_id=mon_result.monitor_id, alert_type = alert,severity="CRITICAL",message="Check Immediately cant determine" ))  
+                     
+        session.commit()
+        
+
 
 @app.on_after_configure.connect
 def setup_periodic_task(sender: Celery, **kwargs):
@@ -144,8 +159,8 @@ def historical_data():
                     successful += 1
                 else:
                     failed += 1
-
-            deviate.append(statistics.stdev(response_time_list))
+            if len(response_time_list) >= 2:
+                deviate.append(statistics.stdev(response_time_list))
              
             if total_checks == 0:
                 uptime_percent = 0
