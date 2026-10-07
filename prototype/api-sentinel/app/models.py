@@ -15,6 +15,7 @@ class Monitor(Base):
     expected_status: Mapped[int] = mapped_column()
     interval_value: Mapped[int] = mapped_column()
     monitor_results: Mapped[list["MonitoringResult"]] = relationship(back_populates="monitor") 
+    alerts: Mapped[list["Alert"]] = relationship(back_populates="monitor")
 
 class MonitoringResult(Base):
     __tablename__ = "monitoring_results"
@@ -25,3 +26,20 @@ class MonitoringResult(Base):
     success: Mapped[bool] = mapped_column()
     checked_at: Mapped[datetime] = mapped_column(default=lambda: datetime.now(timezone.utc))
     monitor: Mapped[Monitor] = relationship(back_populates="monitor_results")
+
+class Alert(Base):
+    __tablename__ = "alerts"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    monitor_id: Mapped[int] = mapped_column(ForeignKey("monitors.id"))
+    alert_type: Mapped[str] = mapped_column()
+    severity: Mapped[str] = mapped_column()
+    message: Mapped[str] = mapped_column()
+    created_at: Mapped[datetime] = mapped_column(default=lambda: datetime.now(timezone.utc))
+    monitor: Mapped[Monitor] = relationship(back_populates="alerts")
+#Alert
+#id
+#monitor_id
+#alert_type
+#severity
+#message
+#created_at
