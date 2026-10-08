@@ -27,11 +27,14 @@ def check_monitor(monitor_id):
    with Session() as session:
      result_mon_with_id = find_monitor(monitor_id, session)
      final_result_with_id = monitoring_results(result_mon_with_id, session)
-     create_alert(final_result_with_id,session)
      isolationForest = IsolationForest()    
      isolationForest.fit(historical_data())
-     data = np.array([final_result_with_id.response_time, int(final_result_with_id.success), final_result_with_id.status_code]).reshape(1,-1)
+     data = np.array([final_result_with_id.response_time, int(final_result_with_id.success)]).reshape(1,-1)
      y_pred = isolationForest.predict(data)
+     if y_pred[0] == -1:
+         create_ml_alert(final_result_with_id,session)
+     elif final_result_with_id.success == False:
+         create_alert(final_result_with_id,session)     
      #monitoring_result_output(final_result_with_id)
      return y_pred
 def create_alert(mon_result,session):
@@ -47,6 +50,17 @@ def create_alert(mon_result,session):
           session.add(Alert(monitor_id=mon_result.monitor_id, alert_type = alert,severity="CRITICAL",message="Check Immediately cant determine" ))  
                      
         session.commit()
+def create_ml_alert(mon_result, session):
+    session.add(
+        Alert(
+            monitor_id=mon_result.monitor_id,
+            alert_type="ML_ANOMALY",
+            severity="WARNING",
+            message="ML anomaly detected"
+        )
+    )
+    session.commit()
+
         
 
 
@@ -202,7 +216,7 @@ def historical_data():
         metrics.append(metrics_dict)
 
         for mon in monitoring_results:
-            training_data.append([mon.response_time, int(mon.success), mon.status_code])
+            training_data.append([mon.response_time, int(mon.success)])
 
         
 
