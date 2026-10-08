@@ -11,6 +11,7 @@ from celery import Celery
 import datetime
 import numpy as np
 from sklearn.ensemble import IsolationForest
+from API_Sentinel_Alert import response_monitoring_alert
 postgresql_db_password = os.environ["postgresql_db_password"]
                         #address of the db                    
 
@@ -27,39 +28,76 @@ def check_monitor(monitor_id):
    with Session() as session:
      result_mon_with_id = find_monitor(monitor_id, session)
      final_result_with_id = monitoring_results(result_mon_with_id, session)
+    
      isolationForest = IsolationForest()    
      isolationForest.fit(historical_data())
      data = np.array([final_result_with_id.response_time, int(final_result_with_id.success)]).reshape(1,-1)
      y_pred = isolationForest.predict(data)
      if y_pred[0] == -1:
-         create_ml_alert(final_result_with_id,session)
+         alert = create_ml_alert(final_result_with_id,session)
+         generate_alert_explanation(final_result_with_id, alert)
      elif final_result_with_id.success == False:
-         create_alert(final_result_with_id,session)     
+         alert = create_alert(final_result_with_id,session)     
+         generate_alert_explanation(final_result_with_id, alert)
      #monitoring_result_output(final_result_with_id)
      return y_pred
+def generate_alert_explanation(mon_result, alert):
+    prompt = f"""
+You are an API monitoring assistant.
+
+An API monitoring alert has occurred.
+
+Alert type: {alert.alert_type}
+Severity: {alert.severity}
+Alert message: {alert.message}
+
+Monitoring information:
+Monitor ID: {mon_result.monitor_id}
+Status code: {mon_result.status_code}
+Response time: {mon_result.response_time}
+Success: {mon_result.success}
+
+Explain:
+1. What happened.
+2. Why it may have happened.
+3. How urgent it is.
+4. What should be checked next.
+
+Keep the explanation short and suitable for an operations engineer.
+Do not invent facts that are not provided.
+"""
+    ai_response = response_monitoring_alert(prompt)
+    return ai_response
+
 def create_alert(mon_result,session):
     alert = "HTTP_FAILURE"
     if mon_result.success == False:
         if mon_result.status_code != None:
           num = mon_result.status_code/100
           if num == 5: 
-           session.add(Alert(monitor_id=mon_result.monitor_id, alert_type = alert,severity="CRITICAL",message="Check Immediately" ))  
+           alert = Alert(monitor_id=mon_result.monitor_id, alert_type = alert,severity="CRITICAL",message="Check Immediately" )
+           session.add(alert)  
           elif num == 4:
-           session.add(Alert(monitor_id=mon_result.monitor_id, alert_type = alert,severity="WARNING",message="Warning notified")) 
+           alert = Alert(monitor_id=mon_result.monitor_id, alert_type = alert,severity="WARNING",message="Warning notified")
+           session.add(alert) 
         else:
-          session.add(Alert(monitor_id=mon_result.monitor_id, alert_type = alert,severity="CRITICAL",message="Check Immediately cant determine" ))  
+          alert = Alert(monitor_id=mon_result.monitor_id, alert_type = alert,severity="CRITICAL",message="Check Immediately cant determine" )
+          session.add(alert)  
                      
         session.commit()
+        return alert
 def create_ml_alert(mon_result, session):
+    alert = Alert(
+                monitor_id=mon_result.monitor_id,
+                alert_type="ML_ANOMALY",
+                severity="WARNING",
+                message="ML anomaly detected"
+            )
     session.add(
-        Alert(
-            monitor_id=mon_result.monitor_id,
-            alert_type="ML_ANOMALY",
-            severity="WARNING",
-            message="ML anomaly detected"
-        )
+        alert
     )
     session.commit()
+    return alert
 
         
 
