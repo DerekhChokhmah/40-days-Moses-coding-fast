@@ -12,6 +12,7 @@ import datetime
 import numpy as np
 from sklearn.ensemble import IsolationForest
 from API_Sentinel_Alert import response_monitoring_alert
+from slack_notifications import slack_notif_sender
 postgresql_db_password = os.environ["postgresql_db_password"]
                         #address of the db                    
 
@@ -33,14 +34,22 @@ def check_monitor(monitor_id):
      isolationForest.fit(historical_data())
      data = np.array([final_result_with_id.response_time, int(final_result_with_id.success)]).reshape(1,-1)
      y_pred = isolationForest.predict(data)
+     alert = None
+     alert_message = None
      if y_pred[0] == -1:
          alert = create_ml_alert(final_result_with_id,session)
-         generate_alert_explanation(final_result_with_id, alert)
+         alert_message = generate_alert_explanation(final_result_with_id, alert)
      elif final_result_with_id.success == False:
          alert = create_alert(final_result_with_id,session)     
-         generate_alert_explanation(final_result_with_id, alert)
+         alert_message = generate_alert_explanation(final_result_with_id, alert)
      #monitoring_result_output(final_result_with_id)
-     return y_pred
+     monitors_checks = {
+         "prediction": y_pred.tolist(),
+         "alert_message": alert_message,
+         "alert_id": alert.id if alert else None
+     }
+     slack_notif_sender(alert_message)
+     return monitors_checks
 def generate_alert_explanation(mon_result, alert):
     prompt = f"""
 You are an API monitoring assistant.
