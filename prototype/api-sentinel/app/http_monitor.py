@@ -1,15 +1,16 @@
 import httpx
 import time 
 from models import MonitoringResult
-
+from metrics import prometheus_collector
 def httpEngine(result):
       link = result.url
       s_code = result.expected_status
       start_time = time.perf_counter()
       try:
         response = httpx.get(link)
-        end_time = time.perf_counter()
+        end_time = time.perf_counter() 
         diff = end_time - start_time
+        prometheus_collector(diff)
         if s_code == response.status_code:
           success_status = True
         else:
@@ -20,18 +21,21 @@ def httpEngine(result):
         print("Timeout error endpoint check failed")
         end_time = time.perf_counter()
         diff = end_time - start_time
+        prometheus_collector(diff) 
         monitor_result = MonitoringResult(monitor_id=result.id, status_code=None, success=False, response_time=diff)
         return monitor_result  
       except httpx.ConnectError:
         print("Connection Error")
         end_time = time.perf_counter()
         diff = end_time - start_time
+        prometheus_collector(diff) 
         monitor_result = MonitoringResult(monitor_id=result.id, status_code=None, success=False, response_time=diff)
         return monitor_result
       except:
         print("Error")  
-        end_time = time.perf_counter()
+        end_time = time.perf_counter() 
         diff = end_time - start_time
+        prometheus_collector(diff) 
         monitor_result = MonitoringResult(monitor_id=result.id, status_code=None, success=False, response_time=diff)
         return monitor_result 
         
