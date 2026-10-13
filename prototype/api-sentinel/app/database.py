@@ -13,11 +13,16 @@ import numpy as np
 from sklearn.ensemble import IsolationForest
 from API_Sentinel_Alert import response_monitoring_alert
 from slack_notifications import slack_notif_sender
+from celery.signals import worker_ready
+from metrics import start_prometheus_server
 postgresql_db_password = os.environ["postgresql_db_password"]
                         #address of the db                    
 
 app = Celery('check_monitor',broker="redis://localhost:6379/0")
-                      
+@worker_ready.connect
+def configure_signals(sender=None, **kwargs):
+    start_prometheus_server()    
+
 engine = create_engine("postgresql+psycopg2://postgres:{}@localhost:8084/api_sentinel".format(postgresql_db_password))
          # does the connection between sqlalchemy and postgresql          
 
@@ -202,6 +207,7 @@ def historical_data():
         z_score_cat = []
         training_data = []
 
+    if dict_mon != {}:
         # REDUCE
         for mon_id, results in dict_mon.items():
 
@@ -211,7 +217,7 @@ def historical_data():
             response_time_list = []
 
             total_checks = len(results)
-
+      
             for res in results:
                 response_time_total += res.response_time
                 response_time_list.append(res.response_time)
@@ -222,22 +228,22 @@ def historical_data():
                     failed += 1
             if len(response_time_list) >= 2:
                 deviate.append(statistics.stdev(response_time_list))
-             
-            if total_checks == 0:
+           
+        if total_checks == 0:
                 uptime_percent = 0
                 failure_rate = 0
                 min_response_time = 0
                 max_response_time = 0
                 avg_response_time = 0
 
-            else:
+        else:
                 uptime_percent = (successful / total_checks) * 100
                 failure_rate = (failed / total_checks) * 100
                 min_response_time = min(response_time_list)
                 max_response_time = max(response_time_list)
                 avg_response_time = response_time_total / len(response_time_list)
            
-            metrics_dict[mon_id] = (
+        metrics_dict[mon_id] = (
                 uptime_percent,
                 failure_rate,
                 min_response_time,
@@ -247,6 +253,7 @@ def historical_data():
                 successful,
                 failed
             )
+
         for i in range(len(response_time_list)):
           for j in range(len(deviate)):
             z = (response_time_list[i] - avg_response_time)/deviate[j]
@@ -268,7 +275,8 @@ def historical_data():
         
 
         return training_data
-    
+  
+
 
 
 print(historical_data())
