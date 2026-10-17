@@ -1,1 +1,13 @@
+fastapi
+uvicorn
+SQLAlchemy
+psycopg2
+pydantic
+httpx
+python-dotenv
+redis
+celery
+numpy
+scikit-learn
+google-genai
 prometheus-client
