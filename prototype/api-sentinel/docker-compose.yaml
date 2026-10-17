@@ -1,0 +1,26 @@
+volumes:
+  postgres-data:
+    
+services:
+  db:
+   image: postgres:18
+   environment:
+     POSTGRES_USER: postgres
+     POSTGRES_PASSWORD: ${postgresql_db_password}
+     POSTGRES_DB: api_sentinel
+   ports:
+     - 8084:5432
+   volumes:
+     - type: volume
+       source: postgres-data
+       target: /var/lib/postgresql 
+
+  broker:
+    image: redis:7
+       
+
+
+
+
+
+     
