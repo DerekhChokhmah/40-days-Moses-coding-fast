@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from app.schemas import schemaForMonitorAPI
 from app.database import Session, exc, text
 #from sqlalchemy import select
-from models import Monitor
+from app.models import Monitor
 
 app = FastAPI()
 
