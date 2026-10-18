@@ -3,27 +3,27 @@ import statistics
 from sqlalchemy import create_engine, select, exc, text
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import sessionmaker
-from models import Base, Monitor, MonitoringResult, Alert
-from http_monitor import httpEngine
+from app.models import Base, Monitor, MonitoringResult, Alert
+from app.http_monitor import httpEngine
 import os 
 import redis
 from celery import Celery
 import datetime
 import numpy as np
 from sklearn.ensemble import IsolationForest
-from API_Sentinel_Alert import response_monitoring_alert
-from slack_notifications import slack_notif_sender
+from app.API_Sentinel_Alert import response_monitoring_alert
+from app.slack_notifications import slack_notif_sender
 from celery.signals import worker_ready
-from metrics import start_prometheus_server
+from app.metrics import start_prometheus_server
 postgresql_db_password = os.environ["postgresql_db_password"]
                         #address of the db                    
 
-app = Celery('check_monitor',broker="redis://localhost:6379/0")
+app = Celery('check_monitor',broker="redis://broker:6379/0")
 @worker_ready.connect
 def configure_signals(sender=None, **kwargs):
     start_prometheus_server()    
 
-engine = create_engine("postgresql+psycopg2://postgres:{}@localhost:8084/api_sentinel".format(postgresql_db_password))
+engine = create_engine("postgresql+psycopg2://postgres:{}@db:5432/api_sentinel".format(postgresql_db_password))
          # does the connection between sqlalchemy and postgresql          
 
 Base.metadata.create_all(engine)
@@ -136,7 +136,7 @@ def monitoring_result_output(results_mon):
 
     
 def find_monitor(monitor_id, session):
-    r = redis.Redis(host="localhost", port=6379, decode_responses=True)
+    r = redis.Redis(host="broker", port=6379, decode_responses=True)
     key = "monitor:{}".format(monitor_id)
     redis_result = r.hgetall(key)
     if redis_result:

@@ -14,9 +14,51 @@ services:
      - type: volume
        source: postgres-data
        target: /var/lib/postgresql 
+   healthcheck:
+       test: ["CMD-SHELL", "pg_isready -d $POSTGRES_DB -U $POSTGRES_USER"]
+       interval: 10s
+       timeout: 5s
+       retries: 5   
 
   broker:
     image: redis:7
+  
+  worker:
+    build: .
+    command: celery -A app.database:app worker --loglevel=INFO 
+    depends_on:
+      db:
+        condition: service_healthy
+      broker:
+        condition: service_started
+    env_file:
+      - .env    
+
+  beat:
+    build: .
+    command: celery -A app.database:app beat --loglevel=INFO 
+    depends_on:
+      db:
+        condition: service_healthy
+      broker:
+        condition: service_started
+    env_file:
+      - .env    
+              
+  api:
+    build: .
+    ports:
+      - 8000:8000
+    depends_on: 
+      db:
+        condition: service_healthy
+      broker: 
+        condition: service_started
+    env_file:
+      - .env    
+          
+
+
        
 
 

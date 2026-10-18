@@ -1,7 +1,7 @@
 import httpx
 import time 
-from models import MonitoringResult
-from metrics import prometheus_collector, counter
+from app.models import MonitoringResult
+from app.metrics import prometheus_collector, counter
 def httpEngine(result):
       link = result.url
       s_code = result.expected_status
