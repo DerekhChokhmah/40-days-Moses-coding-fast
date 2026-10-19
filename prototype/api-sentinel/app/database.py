@@ -53,7 +53,8 @@ def check_monitor(monitor_id):
          "alert_message": alert_message,
          "alert_id": alert.id if alert else None
      }
-     slack_notif_sender(alert_message)
+     if alert_message is not None:
+       slack_notif_sender(alert_message)
      return monitors_checks
 def generate_alert_explanation(mon_result, alert):
     prompt = f"""
@@ -278,5 +279,4 @@ def historical_data():
   
 
 
-
-print(historical_data())
+historical_data()
