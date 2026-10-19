@@ -26,7 +26,7 @@ def configure_signals(sender=None, **kwargs):
 engine = create_engine("postgresql+psycopg2://postgres:{}@db:5432/api_sentinel".format(postgresql_db_password))
          # does the connection between sqlalchemy and postgresql          
 
-Base.metadata.create_all(engine)
+#Base.metadata.create_all(engine) because the tables exist
 Session = sessionmaker(engine)
 
 @app.task
