@@ -18,10 +18,12 @@ services:
        test: ["CMD-SHELL", "pg_isready -d $$POSTGRES_DB -U $$POSTGRES_USER"]
        interval: 10s
        timeout: 5s
-       retries: 5   
+       retries: 5
+   restart: unless-stopped       
 
   broker:
     image: redis:7
+    restart: unless-stopped
   
   worker:
     build: .
@@ -33,7 +35,7 @@ services:
         condition: service_started
     env_file:
       - .env    
-
+    restart: unless-stopped
   beat:
     build: .
     command: celery -A app.database:app beat --loglevel=INFO 
@@ -43,7 +45,8 @@ services:
       broker:
         condition: service_started
     env_file:
-      - .env    
+      - .env
+    restart: unless-stopped      
               
   api:
     build: .
@@ -55,7 +58,8 @@ services:
       broker: 
         condition: service_started
     env_file:
-      - .env    
+      - .env
+    restart: unless-stopped      
           
 
 
