@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-sentinel-api #name of deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-sentinel-api #name of pod
+  template:
+    metadata:
+      labels:
+        app: api-sentinel-api #name of container
+    spec:
+      containers:
+        - name: api
+          image: api-sentinel-api:latest #what the container contains the container image
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+
+        
