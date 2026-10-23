@@ -5,4 +5,7 @@ metadata:
 spec:
   type: ClusterIP
   selector:
-    app: api-sentinel-api  
+    app: api-sentinel-api
+  ports:
+    - port: 8000
+      targetport: 8000    
