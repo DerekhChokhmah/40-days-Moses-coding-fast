@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: postgres
-          image: postgres
+          image: postgres:18
           env:
             - name: POSTGRES_PASSWORD
               valueFrom:
@@ -29,9 +29,9 @@ spec:
           volumeMounts:
             - name: postgres-storage
               mountPath: /var/lib/postgresql
-      volume:
+      volumes:
         - name: postgres-storage
-          PersistentVolumeClaim:
+          persistentVolumeClaim:
             claimName: postgres-pvc 
 
       
