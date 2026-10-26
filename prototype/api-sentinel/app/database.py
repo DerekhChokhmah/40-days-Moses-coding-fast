@@ -18,7 +18,8 @@ from app.metrics import start_prometheus_server
 postgresql_db_password = os.environ["postgresql_db_password"]
                         #address of the db                    
 
-app = Celery('check_monitor',broker="redis://broker:6379/0")
+#app = Celery('check_monitor',broker="redis://broker:6379/0") for docker 
+app = Celery('check_monitor',broker="redis://redis:6379/0")
 @worker_ready.connect
 def configure_signals(sender=None, **kwargs):
     start_prometheus_server()    
@@ -137,7 +138,8 @@ def monitoring_result_output(results_mon):
 
     
 def find_monitor(monitor_id, session):
-    r = redis.Redis(host="broker", port=6379, decode_responses=True)
+    #r = redis.Redis(host="broker", port=6379, decode_responses=True)
+    r = redis.Redis(host="redis", port=6379, decode_responses=True)
     key = "monitor:{}".format(monitor_id)
     redis_result = r.hgetall(key)
     if redis_result:
@@ -277,6 +279,3 @@ def historical_data():
 
         return training_data
   
-
-
-historical_data()

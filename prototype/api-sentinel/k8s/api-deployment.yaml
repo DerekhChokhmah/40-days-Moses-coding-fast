@@ -16,6 +16,12 @@ spec:
         - name: api
           image: api-sentinel-api:latest #what the container contains the container image
           imagePullPolicy: IfNotPresent
+          env: 
+            - name: postgresql_db_password
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: POSTGRES_PASSWORD
           ports:
             - containerPort: 8000
           resources:
