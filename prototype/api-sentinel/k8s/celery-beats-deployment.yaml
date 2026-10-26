@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: celery-beats 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: celery-beats
+  template:
+    metadata:
+      labels:
+        app: celery-beats
+      spec:
+        containers:
+          - name: celery-beats
+            image: api-sentinel-beat:latest    
+            imagePullPolicy: IfNotPresent
+            command:
+              - celery
+            arg:
+              - -A
+              - app.database:app
+              - beat
+              - --loglevel=INFO
+            env:
+              - name: postgresql_db_password
+                valueFrom:
+                  secretKeyRef:
+                    name: db-credentials
+                    key: POSTGRES_PASSWORD         

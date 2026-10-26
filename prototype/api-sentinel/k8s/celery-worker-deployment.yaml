@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: celery-worker
+spec:
+  replicas: 1 
+  selector:
+    matchLabels:
+      app: celery-worker
+  template:
+    metadata:
+      labels:
+        app: celery-worker
+      spec:
+        containers:
+          - name: celery-worker
+            image: api-sentinel-worker:latest
+            imagePullPolicy: IfNotPresent
+            command:
+              - celery
+            arg:
+              - -A
+              - database 
+              - app.database:app
+              - worker
+              - --loglevel=INFO 
+            env:
+              - name: postgresql_db_password
+                valueFrom:
+                  secretKeyRef:
+                    name: db-credentials
+                    key: POSTGRES_PASSWORD   
