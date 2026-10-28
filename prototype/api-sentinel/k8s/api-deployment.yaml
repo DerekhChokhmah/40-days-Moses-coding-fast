@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: api
-          image: api-sentinel-api:latest #what the container contains the container image
+          image: api-sentinel-api:fix-historical-call #what the container contains the container image
           imagePullPolicy: IfNotPresent
           env: 
             - name: postgresql_db_password

@@ -8,4 +8,4 @@ spec:
     app: api-sentinel-api
   ports:
     - port: 8000
-      targetport: 8000    
+      targetPort: 8000    
