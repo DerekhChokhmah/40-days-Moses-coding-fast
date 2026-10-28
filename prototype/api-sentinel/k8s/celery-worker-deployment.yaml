@@ -20,7 +20,6 @@ spec:
             - celery
           args:
             - -A
-            - database 
             - app.database:app
             - worker
             - --loglevel=INFO 
@@ -30,3 +29,8 @@ spec:
                 secretKeyRef:
                   name: db-credentials
                   key: POSTGRES_PASSWORD   
+            - name: API_Sentinel_Alert
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: API_Sentinel_Alert

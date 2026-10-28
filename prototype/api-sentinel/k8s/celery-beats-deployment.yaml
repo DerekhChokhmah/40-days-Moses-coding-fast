@@ -28,4 +28,10 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: db-credentials
-                  key: POSTGRES_PASSWORD         
+                  key: POSTGRES_PASSWORD
+
+            - name: API_Sentinel_Alert
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: API_Sentinel_Alert               
