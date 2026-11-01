@@ -11,3 +11,4 @@ numpy
 scikit-learn
 google-genai
 prometheus-client
+alembic
