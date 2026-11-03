@@ -57,6 +57,17 @@ def check_monitor(monitor_id):
      if alert_message is not None:
        slack_notif_sender(alert_message)
      return monitors_checks
+@app.task
+def dispatch_due_monitors():
+    with Session() as session:
+        monitors = find_active_monitors(session)
+        for monitor in monitors:
+            monitor.next_check_at = datetime.now(timezone.utc) + timedelta(seconds=monitor.interval_value)
+            check_monitor.delay(monitor.id)
+            session.commit()
+
+
+        
 def generate_alert_explanation(mon_result, alert):
     prompt = f"""
 You are an API monitoring assistant.
