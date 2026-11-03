@@ -1,5 +1,5 @@
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, DateTime
 from datetime import datetime, timezone
 from sqlalchemy.orm import relationship
 class Base(DeclarativeBase):
@@ -14,9 +14,10 @@ class Monitor(Base):
     method: Mapped[str] = mapped_column()
     expected_status: Mapped[int] = mapped_column()
     interval_value: Mapped[int] = mapped_column()
+    next_check_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     monitor_results: Mapped[list["MonitoringResult"]] = relationship(back_populates="monitor") 
     alerts: Mapped[list["Alert"]] = relationship(back_populates="monitor")
-
+    
 class MonitoringResult(Base):
     __tablename__ = "monitoring_results"
     id: Mapped[int] = mapped_column(primary_key=True)   

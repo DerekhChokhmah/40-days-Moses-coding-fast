@@ -1,6 +1,6 @@
 import statistics
 
-from sqlalchemy import create_engine, select, exc, text
+from sqlalchemy import create_engine, select, exc, text, or_
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import sessionmaker
 from app.models import Base, Monitor, MonitoringResult, Alert
@@ -15,6 +15,7 @@ from app.API_Sentinel_Alert import response_monitoring_alert
 from app.slack_notifications import slack_notif_sender
 from celery.signals import worker_ready
 from app.metrics import start_prometheus_server
+from datetime import datetime, timezone, timedelta
 postgresql_db_password = os.environ["postgresql_db_password"]
                         #address of the db                    
 
@@ -117,12 +118,7 @@ def create_ml_alert(mon_result, session):
         
 
 
-@app.on_after_configure.connect
-def setup_periodic_task(sender: Celery, **kwargs):
-    with Session() as session:
-        result = find_active_monitors(session)
-        for mon in result:
-            sender.add_periodic_task(mon.interval_value, check_monitor.s(mon.id), name='add every {}s'.format(mon.interval_value))   
+#@app.on_after_configure.connect
 
    
 def monitoring_results(monitor, session):
@@ -175,7 +171,7 @@ def find_monitor(monitor_id, session):
 
 
 def find_active_monitors(session):
-    stmt = select(Monitor).where(Monitor.active == True)
+    stmt = select(Monitor).where(Monitor.active == True, or_(Monitor.next_check_at == None, Monitor.next_check_at <= datetime.now(timezone.utc)))
     result = session.execute(stmt)
     return result.scalars().all()
 
