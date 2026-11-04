@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: celery-worker
-          image: api-sentinel-worker:fix-historical-call
+          image: api-sentinel-worker:dynamic-scheduler-fix-add
           imagePullPolicy: IfNotPresent
           command:
             - celery

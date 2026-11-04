@@ -8,7 +8,6 @@ from app.http_monitor import httpEngine
 import os 
 import redis
 from celery import Celery
-import datetime
 import numpy as np
 from sklearn.ensemble import IsolationForest
 from app.API_Sentinel_Alert import response_monitoring_alert
@@ -20,6 +19,12 @@ postgresql_db_password = os.environ["postgresql_db_password"]
                         #address of the db                    
 
 app = Celery('check_monitor',broker="redis://broker:6379/0")
+app.conf.beat_schedule = {
+    "dispatch-due-monitors": {
+        "task": "app.database.dispatch_due_monitors",
+        "schedule": 5.0,
+    },
+}
 @worker_ready.connect
 def configure_signals(sender=None, **kwargs):
     start_prometheus_server()    
@@ -59,12 +64,16 @@ def check_monitor(monitor_id):
      return monitors_checks
 @app.task
 def dispatch_due_monitors():
+    monitors_ids = []
     with Session() as session:
         monitors = find_active_monitors(session)
         for monitor in monitors:
+            monitors_ids.append(monitor.id)
             monitor.next_check_at = datetime.now(timezone.utc) + timedelta(seconds=monitor.interval_value)
-            check_monitor.delay(monitor.id)
-            session.commit()
+        session.commit()    
+    for monitor_id in monitors_ids:
+        check_monitor.delay(monitor_id)
+            
 
 
         
@@ -189,8 +198,8 @@ def find_active_monitors(session):
 def historical_data():
     stmt = select(MonitoringResult).where(
         MonitoringResult.checked_at >=
-        datetime.datetime.now(datetime.timezone.utc) -
-        datetime.timedelta(hours=24)
+        datetime.now(timezone.utc) -
+        timedelta(hours=24)
     )
 
     with Session() as session:

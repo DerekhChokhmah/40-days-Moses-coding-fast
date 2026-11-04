@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: celery-beats
-          image: api-sentinel-beat:fix-historical-call   
+          image: api-sentinel-beat:dynamic-scheduler   
           imagePullPolicy: IfNotPresent
           command:
             - celery
