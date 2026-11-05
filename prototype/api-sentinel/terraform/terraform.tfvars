@@ -1,0 +1,11 @@
+project_id    = "api-sentinel-513811"
+region        = "asia-south1"
+cluster_name  = "api-sentinel-gke"
+node_count    = 1
+machine_type  = "e2-standard-2"
+network_name  = "api-sentinel-vpc"
+subnet_name   = "api-sentinel-subnet"
+subnet_cidr   = "10.10.0.0/20"
+pods_cidr     = "10.20.0.0/16"
+services_cidr = "10.30.0.0/20"
+environment   = "dev"
