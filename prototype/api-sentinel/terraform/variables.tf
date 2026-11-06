@@ -53,3 +53,8 @@ variable "environment" {
   description = "Deployment environment for API Sentinel"
   type        = string
 }
+
+variable "zone" {
+  description = "Google Cloud zone for the API Sentinel GKE cluster"
+  type        = string
+}
