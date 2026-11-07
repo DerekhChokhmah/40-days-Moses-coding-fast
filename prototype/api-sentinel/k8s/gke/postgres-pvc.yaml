@@ -4,10 +4,10 @@ metadata:
   name: postgres-pvc 
   namespace: api-sentinel
 spec:
-  accessMode:
+  accessModes:
     - ReadWriteOnce
-  storageClassName: storage-rwo
+  storageClassName: standard-rwo
   resources:
     requests:
-      storage: 10 Gi
+      storage: 10Gi
        
