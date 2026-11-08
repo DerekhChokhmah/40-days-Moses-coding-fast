@@ -6,7 +6,7 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
-  storageClassName: standard-rwo
+  storageClassName: postgres-retain-rwo
   resources:
     requests:
       storage: 10Gi
