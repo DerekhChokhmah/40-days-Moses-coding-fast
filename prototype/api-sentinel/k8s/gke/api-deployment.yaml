@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: api-sentinel-api
+  namespace: api-sentinel
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: api-sentinel-api
+
+  template:
+    metadata:
+      labels:
+        app: api-sentinel-api
+
+    spec:
+      containers:
+        - name: api-sentinel-api
+
+          image: asia-south1-docker.pkg.dev/api-sentinel-513811/api-sentinel/api-sentinel-api:gke-v1
+
+          ports:
+            - containerPort: 8000
+              protocol: TCP
+              
+          env:
+            - name: postgresql_db_password
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: POSTGRES_PASSWORD    
