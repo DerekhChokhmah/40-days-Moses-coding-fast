@@ -12,3 +12,4 @@ scikit-learn
 google-genai
 prometheus-client
 alembic
+packaging

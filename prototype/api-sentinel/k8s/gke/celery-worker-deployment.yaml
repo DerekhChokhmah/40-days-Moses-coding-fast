@@ -21,7 +21,7 @@ spec:
       containers:
         - name: celery-worker
 
-          image: asia-south1-docker.pkg.dev/api-sentinel-513811/api-sentinel/api-sentinel-worker:gke-v1
+          image: asia-south1-docker.pkg.dev/api-sentinel-513811/api-sentinel/api-sentinel-worker:gke-v2
 
           imagePullPolicy: Always
 
@@ -44,5 +44,5 @@ spec:
             - name: API_Sentinel_Alert
               valueFrom:
                 secretKeyRef:
-                  name: db-credentials
+                  name: app-secrets
                   key: API_Sentinel_Alert

@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: celery-beat
+  namespace: api-sentinel
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: celery-beat
+
+  template:
+    metadata:
+      labels:
+        app: celery-beat
+
+    spec:
+      containers:
+        - name: celery-beat
+
+          image: asia-south1-docker.pkg.dev/api-sentinel-513811/api-sentinel/api-sentinel-beat:gke-v1
+
+          imagePullPolicy: Always
+
+          command:
+            - celery
+
+          args:
+            - -A
+            - app.database:app
+            - beat
+            - --loglevel=INFO
+
+          env:
+            - name: postgresql_db_password
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: POSTGRES_PASSWORD
+
+            - name: API_Sentinel_Alert
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: API_Sentinel_Alert
