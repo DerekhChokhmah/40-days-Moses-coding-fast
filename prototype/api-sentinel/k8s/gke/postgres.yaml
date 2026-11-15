@@ -24,6 +24,14 @@ spec:
           ports:
             - containerPort: 5432
 
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "500m"
+              memory: "1Gi"  
+
           env:
             - name: POSTGRES_DB
               value: api_sentinel
@@ -36,7 +44,7 @@ spec:
                 secretKeyRef:
                   name: db-credentials
                   key: POSTGRES_PASSWORD
-
+          
           volumeMounts:
             - name: postgres-storage
               mountPath: /var/lib/postgresql

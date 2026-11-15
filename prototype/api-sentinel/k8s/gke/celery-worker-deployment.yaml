@@ -6,7 +6,7 @@ metadata:
   namespace: api-sentinel
 
 spec:
-  replicas: 1
+  replicas: 2
 
   selector:
     matchLabels:
@@ -46,7 +46,7 @@ spec:
                 secretKeyRef:
                   name: app-secrets
                   key: API_Sentinel_Alert
-                  
+
           resources:
             requests:
               cpu: "250m"
