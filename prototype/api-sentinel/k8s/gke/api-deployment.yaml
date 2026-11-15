@@ -27,6 +27,24 @@ spec:
             - containerPort: 8000
               protocol: TCP
 
+          readinessProbe:
+            httpGet: 
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 20
+            timeoutSeconds: 3
+            failureThreshold: 3
+ 
           env:
             - name: postgresql_db_password
               valueFrom:
@@ -39,3 +57,11 @@ spec:
                 secretKeyRef:
                   name: app-secrets
                   key: API_Sentinel_Alert        
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+                  
