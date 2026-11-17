@@ -56,7 +56,14 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: app-secrets
-                  key: API_Sentinel_Alert        
+                  key: API_Sentinel_Alert   
+
+            - name: API_SENTINEL_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: api-auth-secret
+                  key: API_SENTINEL_API_KEY
+
           resources:
             requests:
               cpu: "250m"

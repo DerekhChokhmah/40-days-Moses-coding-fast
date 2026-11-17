@@ -28,7 +28,7 @@ app.conf.beat_schedule = {
 @worker_ready.connect
 def configure_signals(sender=None, **kwargs):
     start_prometheus_server()    
-
+    
 engine = create_engine("postgresql+psycopg2://postgres:{}@db:5432/api_sentinel".format(postgresql_db_password))
          # does the connection between sqlalchemy and postgresql          
 
