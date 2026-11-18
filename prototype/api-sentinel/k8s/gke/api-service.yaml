@@ -6,7 +6,7 @@ metadata:
   namespace: api-sentinel
 
 spec:
-  type: LoadBalancer
+  type: ClusterIP
 
   selector:
     app: api-sentinel-api
