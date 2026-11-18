@@ -18,6 +18,7 @@ spec:
         app: celery-worker
 
     spec:
+      automountServiceAccountToken: false
       containers:
         - name: celery-worker
 

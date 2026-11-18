@@ -18,6 +18,7 @@ spec:
         app: celery-beat
 
     spec:
+      automountServiceAccountToken: false
       containers:
         - name: celery-beat
 

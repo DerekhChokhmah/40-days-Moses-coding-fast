@@ -18,6 +18,7 @@ spec:
         app: api-sentinel-api
 
     spec:
+      automountServiceAccountToken: false
       containers:
         - name: api-sentinel-api
 

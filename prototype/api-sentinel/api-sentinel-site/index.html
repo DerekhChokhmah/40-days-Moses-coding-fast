@@ -1,0 +1,834 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API Sentinel | Intelligent API Monitoring</title>
+  <meta name="description" content="API Sentinel — distributed API monitoring, anomaly detection, alerting and observability." />
+
+  <style>
+    :root {
+      --bg: #080b12;
+      --panel: #101622;
+      --panel2: #141c2a;
+      --border: #222d3d;
+      --text: #e9eef7;
+      --muted: #929eb2;
+      --accent: #66e3c4;
+      --blue: #79a9ff;
+      --purple: #ad92ff;
+      --orange: #ffb86b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.65;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .container {
+      width: min(1120px, 90%);
+      margin: auto;
+    }
+
+    /* NAVBAR */
+
+    nav {
+      border-bottom: 1px solid var(--border);
+      background: rgba(8, 11, 18, 0.9);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+
+    .nav-inner {
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      font-weight: 750;
+      letter-spacing: -0.5px;
+    }
+
+    .logo-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      color: var(--accent);
+      background: rgba(102, 227, 196, 0.1);
+      border: 1px solid rgba(102, 227, 196, 0.25);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 26px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .nav-links a:hover {
+      color: var(--accent);
+    }
+
+    .nav-button {
+      padding: 9px 15px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+    }
+
+    /* HERO */
+
+    .hero {
+      padding: 110px 0 85px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(102, 227, 196, 0.08), transparent 65%);
+      top: -200px;
+      right: -100px;
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--accent);
+      border: 1px solid rgba(102, 227, 196, 0.2);
+      background: rgba(102, 227, 196, 0.06);
+      padding: 6px 11px;
+      border-radius: 50px;
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      background: var(--accent);
+      border-radius: 50%;
+      box-shadow: 0 0 12px var(--accent);
+    }
+
+    h1 {
+      margin-top: 25px;
+      font-size: clamp(42px, 7vw, 76px);
+      line-height: 1.08;
+      letter-spacing: -4px;
+      max-width: 850px;
+    }
+
+    h1 span {
+      color: var(--accent);
+    }
+
+    .hero-description {
+      margin-top: 24px;
+      max-width: 650px;
+      font-size: 17px;
+      color: var(--muted);
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 32px;
+    }
+
+    .button {
+      display: inline-flex;
+      padding: 12px 18px;
+      border-radius: 9px;
+      font-weight: 650;
+      font-size: 13px;
+      transition: 0.2s ease;
+    }
+
+    .button-primary {
+      background: var(--accent);
+      color: #07120f;
+    }
+
+    .button-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(102, 227, 196, 0.15);
+    }
+
+    .button-secondary {
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .button-secondary:hover {
+      border-color: var(--accent);
+    }
+
+    /* TERMINAL */
+
+    .terminal {
+      margin-top: 60px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      background: #0b1019;
+      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.2);
+    }
+
+    .terminal-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 13px 18px;
+      border-bottom: 1px solid var(--border);
+      background: #101622;
+    }
+
+    .terminal-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .terminal-dots i {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #344055;
+    }
+
+    .terminal-label {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .terminal-content {
+      padding: 24px;
+      overflow-x: auto;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 12px;
+      line-height: 2;
+    }
+
+    .terminal-content .green { color: var(--accent); }
+    .terminal-content .blue { color: var(--blue); }
+    .terminal-content .orange { color: var(--orange); }
+    .terminal-content .muted { color: #748198; }
+
+    /* SECTIONS */
+
+    section {
+      padding: 85px 0;
+      border-top: 1px solid rgba(34, 45, 61, 0.6);
+    }
+
+    .section-label {
+      font-size: 11px;
+      color: var(--accent);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    h2 {
+      font-size: clamp(28px, 4vw, 42px);
+      line-height: 1.2;
+      letter-spacing: -1.5px;
+      margin-top: 12px;
+    }
+
+    .section-description {
+      color: var(--muted);
+      max-width: 650px;
+      margin-top: 15px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 38px;
+    }
+
+    .card {
+      border: 1px solid var(--border);
+      background: var(--panel);
+      border-radius: 13px;
+      padding: 24px;
+      transition: border 0.2s, transform 0.2s;
+    }
+
+    .card:hover {
+      border-color: #3b5264;
+      transform: translateY(-3px);
+    }
+
+    .card-icon {
+      font-size: 20px;
+      margin-bottom: 17px;
+      color: var(--accent);
+    }
+
+    .card h3 {
+      font-size: 16px;
+      margin-bottom: 9px;
+    }
+
+    .card p {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .tag {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 4px 8px;
+      color: #b8c5d8;
+      font-size: 10px;
+    }
+
+    /* ARCHITECTURE */
+
+    .architecture {
+      margin-top: 35px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--panel);
+      padding: 25px;
+    }
+
+    .architecture-layer {
+      text-align: center;
+      padding: 20px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--panel2);
+      margin-bottom: 12px;
+    }
+
+    .architecture-layer strong {
+      display: block;
+      font-size: 14px;
+    }
+
+    .architecture-layer small {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .architecture-arrow {
+      text-align: center;
+      color: var(--accent);
+      font-size: 18px;
+      margin: 3px 0 10px;
+    }
+
+    .architecture-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .architecture-row .architecture-layer {
+      margin: 0;
+    }
+
+    /* OBSERVABILITY */
+
+    .observability {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 35px;
+    }
+
+    .observe-card {
+      padding: 30px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--panel);
+    }
+
+    .observe-card.prometheus {
+      border-top: 2px solid #ff8d70;
+    }
+
+    .observe-card.grafana {
+      border-top: 2px solid #ffb86b;
+    }
+
+    .observe-card h3 {
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+
+    .observe-card p {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .observe-status {
+      margin-top: 18px;
+      font-size: 11px;
+      color: var(--orange);
+      border: 1px solid rgba(255, 184, 107, 0.2);
+      border-radius: 6px;
+      padding: 7px 10px;
+      display: inline-block;
+    }
+
+    /* SECURITY */
+
+    .security-list {
+      margin-top: 30px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .security-item {
+      display: flex;
+      gap: 13px;
+      padding: 17px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--panel);
+      font-size: 13px;
+    }
+
+    .security-check {
+      color: var(--accent);
+      font-weight: bold;
+    }
+
+    .security-item p {
+      color: var(--muted);
+      margin-top: 3px;
+    }
+
+    /* TECH STACK */
+
+    .stack {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 30px;
+    }
+
+    .stack-item {
+      border: 1px solid var(--border);
+      background: var(--panel);
+      padding: 12px 16px;
+      border-radius: 9px;
+      font-size: 12px;
+      color: #c5d0e0;
+    }
+
+    /* FOOTER */
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 35px 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 800px) {
+      .grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .observability {
+        grid-template-columns: 1fr;
+      }
+
+      .architecture-row {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        letter-spacing: -2px;
+      }
+
+      .hero {
+        padding: 75px 0 60px;
+      }
+
+      .nav-links {
+        gap: 12px;
+      }
+
+      .nav-links a:not(.nav-button) {
+        display: none;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        font-size: 43px;
+      }
+
+      section {
+        padding: 60px 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAVIGATION -->
+  <nav>
+    <div class="container nav-inner">
+      <a href="#" class="logo">
+        <div class="logo-icon">⌘</div>
+        API Sentinel
+      </a>
+
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#architecture">Architecture</a>
+        <a href="#observability">Observability</a>
+        <a href="#security">Security</a>
+        <a href="https://github.com/WeenAIthDev/40-days-Moses-coding-fast" target="_blank" class="nav-button">GitHub ↗</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="container">
+      <div class="eyebrow">
+        <span class="dot"></span>
+        Distributed Monitoring System
+      </div>
+
+      <h1>
+        Know when your APIs<br />
+        <span>stop behaving.</span>
+      </h1>
+
+      <p class="hero-description">
+        API Sentinel is a cloud-deployed monitoring system designed to track endpoint
+        availability, collect historical performance data, detect anomalies, and
+        support alert-driven operational visibility.
+      </p>
+
+      <div class="hero-actions">
+        <a href="#architecture" class="button button-primary">Explore Architecture →</a>
+        <a href="https://github.com/WeenAIthDev/40-days-Moses-coding-fast" target="_blank" class="button button-secondary">View Repository ↗</a>
+      </div>
+
+      <!-- TERMINAL -->
+      <div class="terminal">
+        <div class="terminal-top">
+          <div class="terminal-dots"><i></i><i></i><i></i></div>
+          <span class="terminal-label">api-sentinel · system overview</span>
+          <span class="terminal-label">GKE</span>
+        </div>
+
+        <div class="terminal-content">
+          <div class="green">$ kubectl get pods -n api-sentinel</div>
+          <br />
+          <div class="muted">NAME &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; STATUS</div>
+          <div><span class="blue">api-sentinel-api</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="green">Running</span></div>
+          <div><span class="blue">celery-worker</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="green">Running</span></div>
+          <div><span class="blue">celery-beat</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="green">Running</span></div>
+          <div><span class="blue">postgres</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="green">Running</span></div>
+          <div><span class="blue">redis</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="green">Running</span></div>
+          <br />
+          <div class="orange">● Containerized · ● Orchestrated · ● Distributed</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- FEATURES -->
+  <section id="features">
+    <div class="container">
+      <div class="section-label">Capabilities</div>
+      <h2>Built for operational visibility.</h2>
+      <p class="section-description">
+        A modular monitoring pipeline combining scheduled execution, persistence,
+        analysis, and alerting components.
+      </p>
+
+      <div class="grid">
+        <div class="card">
+          <div class="card-icon">◉</div>
+          <h3>Endpoint Monitoring</h3>
+          <p>Monitor HTTP endpoints and record response status and performance data.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-icon">↻</div>
+          <h3>Scheduled Execution</h3>
+          <p>Automated monitoring through Celery Beat and asynchronous workers.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-icon">⌁</div>
+          <h3>Historical Data</h3>
+          <p>Persist monitoring results in PostgreSQL for future analysis.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-icon">⌁</div>
+          <h3>Anomaly Analysis</h3>
+          <p>Designed to support statistical and machine-learning approaches to anomalous behaviour.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-icon">⚑</div>
+          <h3>Alerting Pipeline</h3>
+          <p>Monitoring events feed into an alerting workflow and incident visibility layer.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-icon">⬡</div>
+          <h3>Cloud Deployment</h3>
+          <p>Containerized services orchestrated on Google Kubernetes Engine.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ARCHITECTURE -->
+  <section id="architecture">
+    <div class="container">
+      <div class="section-label">System Design</div>
+      <h2>Distributed architecture.</h2>
+      <p class="section-description">
+        API Sentinel separates request handling, scheduling, execution,
+        storage, and observability responsibilities.
+      </p>
+
+      <div class="architecture">
+        <div class="architecture-layer">
+          <strong>FastAPI Application</strong>
+          <small>API endpoints · Authentication · Monitor management</small>
+        </div>
+
+        <div class="architecture-arrow">↓</div>
+
+        <div class="architecture-row">
+          <div class="architecture-layer">
+            <strong>Celery Beat</strong>
+            <small>Scheduling</small>
+          </div>
+          <div class="architecture-layer">
+            <strong>Redis</strong>
+            <small>Message broker</small>
+          </div>
+          <div class="architecture-layer">
+            <strong>PostgreSQL</strong>
+            <small>Persistent storage</small>
+          </div>
+        </div>
+
+        <div class="architecture-arrow">↓</div>
+
+        <div class="architecture-layer">
+          <strong>Celery Worker</strong>
+          <small>Asynchronous monitor execution · HTTP checks · Result processing</small>
+        </div>
+
+        <div class="architecture-arrow">↓</div>
+
+        <div class="architecture-row">
+          <div class="architecture-layer">
+            <strong>Monitoring Results</strong>
+            <small>Response data & history</small>
+          </div>
+          <div class="architecture-layer">
+            <strong>Anomaly Analysis</strong>
+            <small>Detection pipeline</small>
+          </div>
+          <div class="architecture-layer">
+            <strong>Alerting</strong>
+            <small>Event notifications</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- OBSERVABILITY -->
+  <section id="observability">
+    <div class="container">
+      <div class="section-label">Observability</div>
+      <h2>Metrics. Context. Visibility.</h2>
+      <p class="section-description">
+        The observability layer is designed to provide insight into application
+        performance and infrastructure behaviour.
+      </p>
+
+      <div class="observability">
+        <div class="observe-card prometheus">
+          <h3>Prometheus</h3>
+          <p>
+            Metrics collection and time-series monitoring. Designed to gather
+            telemetry from services and infrastructure.
+          </p>
+          <div class="tag-list">
+            <span class="tag">Metrics</span>
+            <span class="tag">Time Series</span>
+            <span class="tag">Scraping</span>
+          </div>
+          <div class="observe-status">Deployment status: Not verified</div>
+        </div>
+
+        <div class="observe-card grafana">
+          <h3>Grafana</h3>
+          <p>
+            Dashboard and visualization layer for metrics, trends, operational
+            signals, and system health.
+          </p>
+          <div class="tag-list">
+            <span class="tag">Dashboards</span>
+            <span class="tag">Visualization</span>
+            <span class="tag">Monitoring</span>
+          </div>
+          <div class="observe-status">Deployment status: Not verified</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECURITY -->
+  <section id="security">
+    <div class="container">
+      <div class="section-label">Security</div>
+      <h2>Security-conscious deployment.</h2>
+      <p class="section-description">
+        Security controls implemented during deployment and hardening.
+      </p>
+
+      <div class="security-list">
+        <div class="security-item">
+          <span class="security-check">✓</span>
+          <div>
+            <strong>API Key Authentication</strong>
+            <p>Protected API routes require an API key.</p>
+          </div>
+        </div>
+
+        <div class="security-item">
+          <span class="security-check">✓</span>
+          <div>
+            <strong>Kubernetes Secrets</strong>
+            <p>Sensitive configuration is supplied through Kubernetes Secrets.</p>
+          </div>
+        </div>
+
+        <div class="security-item">
+          <span class="security-check">✓</span>
+          <div>
+            <strong>Internal Services</strong>
+            <p>PostgreSQL and Redis are not exposed through public LoadBalancer services.</p>
+          </div>
+        </div>
+
+        <div class="security-item">
+          <span class="security-check">✓</span>
+          <div>
+            <strong>ServiceAccount Token Reduction</strong>
+            <p>Automatic ServiceAccount token mounting disabled on application workloads.</p>
+          </div>
+        </div>
+
+        <div class="security-item">
+          <span class="security-check">!</span>
+          <div>
+            <strong>HTTPS & Network Policies</strong>
+            <p>Deferred. Public API is not yet configured with HTTPS; NetworkPolicy enforcement remains a future hardening task.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TECH STACK -->
+  <section id="technology">
+    <div class="container">
+      <div class="section-label">Technology</div>
+      <h2>Technology stack.</h2>
+
+      <div class="stack">
+        <span class="stack-item">Python</span>
+        <span class="stack-item">FastAPI</span>
+        <span class="stack-item">PostgreSQL</span>
+        <span class="stack-item">SQLAlchemy</span>
+        <span class="stack-item">Redis</span>
+        <span class="stack-item">Celery</span>
+        <span class="stack-item">HTTPX</span>
+        <span class="stack-item">Docker</span>
+        <span class="stack-item">Kubernetes</span>
+        <span class="stack-item">GKE</span>
+        <span class="stack-item">Terraform</span>
+        <span class="stack-item">Prometheus</span>
+        <span class="stack-item">Grafana</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container footer-inner">
+      <span>API Sentinel · Distributed Monitoring System</span>
+      <span>Built by WeenAIthDev · 2026</span>
+    </div>
+  </footer>
+
+</body>
+</html>
