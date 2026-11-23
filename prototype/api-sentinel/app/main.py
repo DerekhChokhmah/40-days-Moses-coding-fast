@@ -5,9 +5,14 @@ from app.database import Session, exc, text
 #from sqlalchemy import select
 from app.models import Monitor, MonitoringResult
 from app.security import verify_api_key
+from prometheus_fastapi_instrumentator import Instrumentator
 
 app = FastAPI()
-
+Instrumentator.instrument(app).expose(
+    app,
+    endpoint="/metrics",
+    include_in_schema=False
+)
 
 @app.post("/monitors", dependencies=[Depends(verify_api_key)])
 async def create_monitor_data(schema: schemaForMonitorAPI):

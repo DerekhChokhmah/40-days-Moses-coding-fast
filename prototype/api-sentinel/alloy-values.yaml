@@ -1,0 +1,34 @@
+﻿cluster:
+  name: api-sentinel-gke
+
+collectors:
+  alloy:
+    presets:
+      - small
+      - singleton
+
+collectorCommon:
+  alloy:
+    remoteConfig:
+      enabled: true
+      url: https://fleet-management-prod-018.grafana.net
+      auth:
+        type: basic
+        username: "1934198"
+        passwordKey: password
+        secret:
+          create: false
+          name: grafana-cloud-alloy
+          namespace: monitoring
+
+clusterMetrics:
+  enabled: false
+
+clusterEvents:
+  enabled: false
+
+nodeLogs:
+  enabled: false
+
+selfReporting:
+  enabled: false
