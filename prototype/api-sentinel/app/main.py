@@ -8,7 +8,7 @@ from app.security import verify_api_key
 from prometheus_fastapi_instrumentator import Instrumentator
 
 app = FastAPI()
-Instrumentator.instrument(app).expose(
+Instrumentator().instrument(app).expose(
     app,
     endpoint="/metrics",
     include_in_schema=False
