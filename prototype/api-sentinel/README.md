@@ -2,36 +2,47 @@
 
 ### Production-Ready API Monitoring, Observability & Anomaly Detection Platform
 
-API Sentinel is a cloud-native API monitoring and observability platform designed to monitor HTTP endpoints, collect historical performance data, detect anomalies, and provide actionable alerts when monitored services become unavailable or experience abnormal behavior.
+**Live Health Endpoint:** [https://api.apisentinel.dev/health](https://api.apisentinel.dev/health)
 
-The platform combines asynchronous task processing, persistent monitoring history, statistical and machine-learning-based anomaly detection, and cloud-native observability to provide visibility into API health and performance.
+**GitHub Repository:** [API Sentinel – Source Code](https://github.com/DerekhChokhmah/40-days-Moses-coding-fast/tree/main/prototype/api-sentinel)
 
 ---
 
 ## 1. Project Overview
 
-Modern applications depend on multiple APIs and external services. Service disruptions, increased response times, and unexpected HTTP errors can affect application availability and reliability.
+API Sentinel is a cloud-native API monitoring and observability platform designed to monitor HTTP endpoints, collect historical performance data, detect anomalies, and provide actionable alerts when monitored services become unavailable or experience abnormal behavior.
 
-API Sentinel addresses these challenges through:
+The platform combines asynchronous task processing, persistent monitoring history, statistical and machine-learning-based anomaly detection, and cloud-native observability.
+
+### Key Objectives
 
 - Automated HTTP endpoint monitoring.
 - Scheduled monitoring using Celery Beat.
 - Asynchronous monitoring execution using Celery workers.
 - Persistent monitoring history using PostgreSQL.
 - Redis-based task queuing.
-- Statistical and machine-learning anomaly detection.
+- Statistical and machine-learning-based anomaly detection.
 - Alert generation and AI-assisted alert explanations.
 - Prometheus metrics collection.
 - Grafana Cloud dashboards and alerting.
 - Kubernetes-based deployment.
 
-**Primary objective:** Build a production-oriented monitoring system that demonstrates backend engineering, asynchronous processing, data engineering, observability, anomaly detection, and cloud infrastructure deployment.
+---
+
+## 2. Live Deployment
+
+| Resource | Link |
+|---|---|
+| API Health Check | [https://api.apisentinel.dev/health](https://api.apisentinel.dev/health) |
+| GitHub Repository | [View Source Code](https://github.com/DerekhChokhmah/40-days-Moses-coding-fast/tree/main/prototype/api-sentinel) |
+| API Documentation | `/docs` — protected by Cloudflare Access in production |
+| Prometheus Metrics | `/metrics` — application metrics endpoint |
+
+The public health endpoint provides a way to verify API availability.
 
 ---
 
-## 2. Architecture
-
-### High-Level Architecture
+## 3. System Architecture
 
 ```mermaid
 flowchart TD
@@ -69,14 +80,14 @@ flowchart TD
 | Grafana Cloud | Visualization, observability and alerting |
 | Kubernetes | Container orchestration |
 | Google Kubernetes Engine | Cloud deployment infrastructure |
-| Cloudflare Tunnel | External access to the deployed API |
+| Cloudflare Tunnel | External application access |
 | Docker | Containerization |
 
 ---
 
-## 3. Core Features
+## 4. Core Features
 
-### 3.1 HTTP Endpoint Monitoring
+### 4.1 HTTP Endpoint Monitoring
 
 Monitor external HTTP endpoints and collect:
 
@@ -86,29 +97,27 @@ Monitor external HTTP endpoints and collect:
 - Monitoring execution results.
 - Historical monitoring information.
 
-### 3.2 Automated Scheduling
+### 4.2 Automated Scheduling
 
 Celery Beat periodically dispatches monitoring tasks.
 
-Celery workers execute monitoring jobs asynchronously, allowing the API application to remain independent of long-running monitoring operations.
+Celery workers execute monitoring jobs asynchronously, keeping long-running monitoring operations independent of API request handling.
 
-### 3.3 Historical Data Persistence
+### 4.3 Historical Data Persistence
 
 PostgreSQL stores monitoring configurations and execution results.
 
 The historical dataset provides the foundation for performance analysis and anomaly detection.
 
-### 3.4 Anomaly Detection
+### 4.4 Anomaly Detection
 
-The platform incorporates multiple analytical approaches:
+The platform incorporates:
 
 - Statistical anomaly detection.
 - Machine-learning-based anomaly detection.
 - Historical performance analysis.
 
-These approaches help identify unusual monitoring behavior and performance deviations.
-
-### 3.5 Alert Management
+### 4.5 Alert Management
 
 API Sentinel generates alerts based on monitoring failures and detected anomalies.
 
@@ -116,7 +125,7 @@ AI-assisted explanations provide additional context to help interpret alerts.
 
 ---
 
-## 4. Technology Stack
+## 5. Technology Stack
 
 | Category | Technologies |
 |---|---|
@@ -139,7 +148,7 @@ AI-assisted explanations provide additional context to help interpret alerts.
 
 ---
 
-## 5. Database Architecture
+## 6. Database Architecture
 
 The application uses PostgreSQL for persistent storage.
 
@@ -155,7 +164,7 @@ SQLAlchemy handles database interactions, while Alembic manages database schema 
 
 ---
 
-## 6. Application Monitoring and Observability
+## 7. Application Monitoring and Observability
 
 API Sentinel exposes Prometheus-compatible application metrics through:
 
@@ -166,8 +175,6 @@ API Sentinel exposes Prometheus-compatible application metrics through:
 The metrics endpoint is instrumented using `prometheus-fastapi-instrumentator`.
 
 ### Metrics collected
-
-Examples include:
 
 - `http_requests_total`
 - `http_request_duration_seconds_bucket`
@@ -190,34 +197,34 @@ Grafana Alloy
 Grafana Cloud Prometheus
    |
    v
-Grafana Dashboard
+Grafana Dashboards and Alerting
 ```
 
 Grafana Alloy scrapes application metrics every 30 seconds and forwards them to Grafana Cloud.
 
-### Grafana Dashboard
+### Grafana Dashboards
 
-The API Sentinel production observability dashboard includes:
+The following individual dashboards were created:
 
-1. Total API Requests
-2. Request Rate by Endpoint
-3. HTTP Response Status Distribution
-4. API Request Latency (p50, p95, p99)
-5. API Error Rate
-6. API Availability
-7. API Process CPU Usage
-8. API Process Memory Usage
-9. HTTP Request Volume by Endpoint
+1. API Availability
+2. API Error Rate
+3. API Process CPU Usage
+4. API Process Memory Usage
+5. API Request Latency
+6. HTTP Request Volume by Endpoint
+7. HTTP Response Status Distribution
+
+A consolidated dashboard brings the monitoring visualizations together for an overall production observability view.
 
 ### Grafana Alerting
 
-Three alert rules are configured.
+Three alert rules are configured:
 
-| Alert | Condition | Evaluation |
+| Alert | Condition | Pending Period |
 |---|---|---|
-| API Unavailable | Scrape value below 0.5 | 2-minute pending period |
-| High HTTP 5xx Error Rate | Error rate above 5% | 5-minute pending period |
-| High API Latency | p95 latency above 1 second | 5-minute pending period |
+| API Unavailable | Scrape value below 0.5 | 2 minutes |
+| High HTTP 5xx Error Rate | Error rate above 5% | 5 minutes |
+| High API Latency | p95 latency above 1 second | 5 minutes |
 
 Email notifications are configured through a Grafana Cloud contact point.
 
@@ -225,7 +232,69 @@ The email contact point has been tested successfully.
 
 ---
 
-## 7. Containerization
+## 8. Project Screenshots
+
+Screenshots provide visual evidence of the deployed application, monitoring infrastructure and observability configuration.
+
+All screenshot files are stored in the `screenshots/` directory.
+
+### 8.1 Consolidated Grafana Dashboard
+
+![API Sentinel Grafana Dashboard](screenshots/grafana-dashboard.png)
+
+### 8.2 Individual Grafana Dashboards
+
+#### API Availability
+
+![API Availability](screenshots/api-availability.png)
+
+#### API Error Rate
+
+![API Error Rate](screenshots/api-error-rate.png)
+
+#### API Process CPU Usage
+
+![API Process CPU Usage](screenshots/api-process-cpu-usage.png)
+
+#### API Process Memory Usage
+
+![API Process Memory Usage](screenshots/api-process-memory-usage.png)
+
+#### API Request Latency
+
+![API Request Latency](screenshots/api-request-latency.png)
+
+#### HTTP Request Volume by Endpoint
+
+![HTTP Request Volume by Endpoint](screenshots/http-request-volume-by-endpoint.png)
+
+#### HTTP Response Status Distribution
+
+![HTTP Response Status Distribution](screenshots/http-response-status-distribution.png)
+
+### 8.3 Grafana Alert Rules
+
+![Grafana Alert Rules](screenshots/grafana-alert-rules.png)
+
+### 8.4 Grafana Email Contact Point
+
+![Grafana Contact Point](screenshots/grafana-contact-point.png)
+
+### 8.5 Kubernetes Deployment
+
+![Kubernetes Deployment](screenshots/kubernetes-deployment.png)
+
+### 8.6 FastAPI Swagger Documentation
+
+![FastAPI Swagger Documentation](screenshots/fastapi-swagger.png)
+
+### 8.7 Grafana Alloy Collector
+
+![Grafana Alloy Collector](screenshots/grafana-alloy.png)
+
+---
+
+## 9. Containerization
 
 Docker is used to package application components into containers.
 
@@ -241,11 +310,11 @@ Docker Compose is used for local multi-container development.
 
 ---
 
-## 8. Kubernetes Deployment
+## 10. Kubernetes Deployment
 
 API Sentinel is deployed on Google Kubernetes Engine.
 
-### Deployment components
+### Deployment Components
 
 | Workload | Purpose |
 |---|---|
@@ -256,7 +325,7 @@ API Sentinel is deployed on Google Kubernetes Engine.
 | redis | Message broker |
 | api-sentinel-tunnel | External application access |
 
-### Kubernetes capabilities demonstrated
+### Kubernetes Capabilities
 
 - Deployments and StatefulSets.
 - ClusterIP services.
@@ -267,7 +336,7 @@ API Sentinel is deployed on Google Kubernetes Engine.
 - Application rollout and deployment management.
 - Namespace isolation.
 
-### Cluster information
+### Cluster Information
 
 | Configuration | Value |
 |---|---|
@@ -277,7 +346,7 @@ API Sentinel is deployed on Google Kubernetes Engine.
 | Region | asia-south1 |
 | Namespace | api-sentinel |
 
-### Useful Kubernetes commands
+### Useful Kubernetes Commands
 
 Check application pods:
 
@@ -311,32 +380,34 @@ kubectl rollout status deployment/api-sentinel-api -n api-sentinel
 
 ---
 
-## 9. Local Development Setup
+## 11. Local Development Setup
 
 ### Prerequisites
 
 - Python
 - Docker
 - Docker Compose
-- PostgreSQL-compatible database configuration
+- PostgreSQL
 - Redis
 - Git
 
 ### Clone the repository
 
 ```bash
-git clone <YOUR_GITHUB_REPOSITORY_URL>
+git clone https://github.com/DerekhChokhmah/40-days-Moses-coding-fast.git
 ```
 
+Navigate to the project:
+
 ```bash
-cd api-sentinel
+cd 40-days-Moses-coding-fast/prototype/api-sentinel
 ```
 
 ### Configure environment variables
 
 Create a `.env` file containing the environment variables required by the application.
 
-Example configuration:
+Example:
 
 ```env
 POSTGRES_PASSWORD=<YOUR_DATABASE_PASSWORD>
@@ -345,7 +416,7 @@ GEMINI_API_KEY=<YOUR_GEMINI_API_KEY>
 
 Add any additional variables required by the application configuration.
 
-Never commit `.env` files, API keys, database credentials, or cloud access tokens.
+Never commit `.env` files, API keys, database credentials or cloud access tokens.
 
 ### Start the application
 
@@ -373,41 +444,31 @@ docker compose down
 
 ---
 
-## 10. API Health Verification
+## 12. API Health Verification
 
-The application exposes a health endpoint:
+The deployed health endpoint is publicly accessible:
 
-```text
-/health
-```
+**[https://api.apisentinel.dev/health](https://api.apisentinel.dev/health)**
 
-Example local verification:
+Test using curl:
 
 ```bash
-curl http://localhost:8000/health
+curl https://api.apisentinel.dev/health
 ```
 
-The metrics endpoint can be accessed through:
+The application also exposes:
 
-```text
-/metrics
-```
-
-API documentation is available through the FastAPI Swagger interface:
-
-```text
-/docs
-```
+| Endpoint | Purpose |
+|---|---|
+| `/health` | API health verification |
+| `/metrics` | Prometheus-compatible application metrics |
+| `/docs` | FastAPI Swagger documentation |
 
 Production documentation access may be protected by Cloudflare Access.
 
 ---
 
-## 11. Security Considerations
-
-The deployment uses environment-based configuration and Kubernetes Secrets for sensitive credentials.
-
-Security considerations include:
+## 13. Security Considerations
 
 - Avoid committing credentials to Git.
 - Store API keys outside source code.
@@ -419,9 +480,9 @@ Security considerations include:
 
 ---
 
-## 12. Project Outcomes
+## 14. Project Outcomes
 
-API Sentinel demonstrates the implementation and integration of:
+API Sentinel demonstrates the integration of:
 
 - REST API development.
 - Asynchronous task processing.
@@ -437,36 +498,22 @@ API Sentinel demonstrates the implementation and integration of:
 - Kubernetes orchestration.
 - Google Cloud deployment.
 
-The project brings together backend development, data engineering, machine learning, DevOps, and production observability in one integrated system.
+The project brings together backend engineering, data engineering, machine learning, DevOps and production observability in one integrated system.
 
 ---
 
-## 13. Future Improvements
+## 15. Project Status
 
-Potential future extensions include:
-
-- Multi-tenant monitoring.
-- Advanced anomaly detection.
-- More configurable alert policies.
-- Additional notification integrations.
-- Distributed monitoring agents.
-- Advanced service-level objective reporting.
-
-These are future possibilities and are not required for the current project release.
-
----
-
-## 14. Project Status
-
-**Project:** API Sentinel
-
-**Category:** Backend Engineering | MLOps | DevOps | Observability
-
-**Deployment:** Google Kubernetes Engine
-
-**Monitoring:** Grafana Cloud and Prometheus-compatible metrics
-
-**Status:** Core implementation and deployment completed; final documentation and verification in progress.
+| Attribute | Details |
+|---|---|
+| Project | API Sentinel |
+| Category | Backend Engineering, MLOps, DevOps, Observability |
+| Deployment | Google Kubernetes Engine |
+| Monitoring | Grafana Cloud and Prometheus-compatible metrics |
+| API Health | Public health endpoint |
+| Alerting | Three configured Grafana alert rules |
+| Email Notifications | Tested |
+| Status | Core implementation and deployment completed; final documentation and verification in progress |
 
 ---
 
@@ -474,4 +521,6 @@ These are future possibilities and are not required for the current project rele
 
 Developed as a production-oriented engineering portfolio project.
 
-**Focus areas:** Python Backend Development, API Engineering, Data Analytics, Machine Learning, DevOps and Cloud Infrastructure.
+**Focus Areas:** Python Backend Development, API Engineering, Data Analytics, Machine Learning, DevOps and Cloud Infrastructure.
+
+**Source Code:** [GitHub – API Sentinel](https://github.com/DerekhChokhmah/40-days-Moses-coding-fast/tree/main/prototype/api-sentinel)
