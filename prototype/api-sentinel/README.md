@@ -6,6 +6,7 @@
 
 **GitHub Repository:** [API Sentinel – Source Code](https://github.com/DerekhChokhmah/40-days-Moses-coding-fast/tree/main/prototype/api-sentinel)
 
+**Project Overview:** [Explore API Sentinel – Project Documentation](https://derekhchokhmah.github.io/40-days-Moses-coding-fast/)
 ---
 
 ## 1. Project Overview
